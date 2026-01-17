@@ -1,0 +1,1253 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Backend API service for Oil Bank System",
+    "title": "Oil Bank System Backend API Service",
+    "contact": {},
+    "version": "0.0.1"
+  },
+  "basePath": "/v1",
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "Enter your bearer token in the format: Bearer {token}"
+    }
+  },
+  "paths": {
+    "/oil": {
+      "post": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Creates a new oil record in the collector's inventory",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["oil"],
+        "summary": "Create a new oil record",
+        "parameters": [
+          {
+            "description": "Oil record details",
+            "name": "oil",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OilCreateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/HTTPResponse"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/OilResponse"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found - Invalid collector_id or seller_id",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/oil/{id}": {
+      "get": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Retrieves a specific oil record by ID",
+        "produces": ["application/json"],
+        "tags": ["oil"],
+        "summary": "Get oil record by ID",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "description": "Oil ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/HTTPResponse"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/OilResponse"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid UUID",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          }
+        }
+      },
+      "patch": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Updates an oil record (only volume and price can be updated)",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["oil"],
+        "summary": "Update oil record",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "description": "Oil ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "description": "Oil update data (volume and price only)",
+            "name": "oil",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OilUpdateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/HTTPResponse"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/OilResponse"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Deletes an oil record from the system",
+        "produces": ["application/json"],
+        "tags": ["oil"],
+        "summary": "Delete oil record",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "description": "Oil ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/HTTPResponse"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Oil record deleted successfully"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/oil/collector/{collector_id}": {
+      "get": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Retrieves all oil records owned by a specific collector",
+        "produces": ["application/json"],
+        "tags": ["oil"],
+        "summary": "Get all oil records by collector ID",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "description": "Collector ID",
+            "name": "collector_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - Returns array of oil records",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/HTTPResponse"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/OilResponse"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid collector ID",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/oil/collector/{collector_id}/inventory": {
+      "get": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Retrieves the total oil inventory summary for a collector (total volume and record count)",
+        "produces": ["application/json"],
+        "tags": ["oil"],
+        "summary": "Get collector inventory summary",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "description": "Collector ID",
+            "name": "collector_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/HTTPResponse"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/CollectorInventoryResponse"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid collector ID",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "description": "Register a new user account",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "Register a new user",
+        "parameters": [
+          {
+            "description": "User registration details",
+            "name": "user",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserCreateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/HTTPResponse"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/User"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "409": {
+            "description": "Conflict - User already exists",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "description": "Get user by ID",
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "Get user details",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "User ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/HTTPResponse"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/User"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "Update user information",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "Update user",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "User ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "description": "User update details",
+            "name": "user",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserUpdateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/HTTPResponse"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/User"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete user by ID",
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "Delete user",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "User ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/HTTPResponse"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/users/auth/login": {
+      "post": {
+        "description": "Authenticate user and receive access token",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "User login",
+        "parameters": [
+          {
+            "description": "Login credentials",
+            "name": "credentials",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserLoginRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/HTTPResponse"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/User"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid credentials",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found - User not found",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/transactions": {
+      "post": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Creates a new transaction (sell or buy/distribute)",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["transactions"],
+        "summary": "Create a new transaction",
+        "parameters": [
+          {
+            "description": "Transaction details",
+            "name": "transaction",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TransactionDto"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/HTTPResponse"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/TransactionResponse"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/reports/date": {
+      "post": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Retrieves sales or purchase reports for a specific date range",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["reports"],
+        "summary": "Get reports by date range",
+        "parameters": [
+          {
+            "description": "Report date range and type",
+            "name": "report",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ReportByDate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/HTTPResponse"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/ReportTransaction"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/reports/all": {
+      "post": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "Retrieves all sales or purchase reports without date filtering",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["reports"],
+        "summary": "Get all reports",
+        "parameters": [
+          {
+            "description": "Report type",
+            "name": "report",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ReportAll"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/HTTPResponse"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/ReportTransaction"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/HTTPErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "OilCreateRequest": {
+      "type": "object",
+      "required": ["collector_id", "seller_id", "volume", "price"],
+      "properties": {
+        "collector_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "ID of the collector who owns this oil",
+          "example": "550e8400-e29b-41d4-a716-446655440000"
+        },
+        "seller_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "ID of the seller who sold this oil",
+          "example": "660e8400-e29b-41d4-a716-446655440001"
+        },
+        "volume": {
+          "type": "number",
+          "format": "double",
+          "minimum": 0.01,
+          "description": "Volume of oil in liters",
+          "example": 50.5
+        },
+        "price": {
+          "type": "number",
+          "format": "double",
+          "minimum": 0.01,
+          "description": "Price per liter",
+          "example": 5000
+        }
+      }
+    },
+    "OilUpdateRequest": {
+      "type": "object",
+      "required": ["volume", "price"],
+      "properties": {
+        "volume": {
+          "type": "number",
+          "format": "double",
+          "minimum": 0.01,
+          "description": "Updated volume of oil in liters",
+          "example": 45.0
+        },
+        "price": {
+          "type": "number",
+          "format": "double",
+          "minimum": 0.01,
+          "description": "Updated price per liter",
+          "example": 5500
+        }
+      },
+      "description": "Only volume and price can be updated. updated_at is automatically set by the database."
+    },
+    "OilResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "example": "770e8400-e29b-41d4-a716-446655440002"
+        },
+        "collector_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "ID of the collector who owns this oil",
+          "example": "550e8400-e29b-41d4-a716-446655440000"
+        },
+        "seller_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "ID of the seller who sold this oil",
+          "example": "660e8400-e29b-41d4-a716-446655440001"
+        },
+        "volume": {
+          "type": "number",
+          "format": "double",
+          "description": "Volume of oil in liters",
+          "example": 50.5
+        },
+        "price": {
+          "type": "number",
+          "format": "double",
+          "description": "Price per liter when purchased",
+          "example": 5000
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2024-01-15T10:30:00Z"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2024-01-15T10:30:00Z"
+        }
+      }
+    },
+    "CollectorInventoryResponse": {
+      "type": "object",
+      "properties": {
+        "collector_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "ID of the collector",
+          "example": "550e8400-e29b-41d4-a716-446655440000"
+        },
+        "total_volume": {
+          "type": "number",
+          "format": "double",
+          "description": "Total volume of all oil records owned by this collector (in liters)",
+          "example": 150.5
+        },
+        "record_count": {
+          "type": "integer",
+          "description": "Number of oil records owned by this collector",
+          "example": 3
+        }
+      }
+    },
+    "UserCreateRequest": {
+      "type": "object",
+      "required": ["username", "email", "password", "user_type"],
+      "properties": {
+        "username": {
+          "type": "string",
+          "minLength": 7,
+          "example": "johndoe"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "john@example.com"
+        },
+        "password": {
+          "type": "string",
+          "minLength": 6,
+          "example": "password123"
+        },
+        "user_type": {
+          "type": "string",
+          "enum": ["SELLER", "COLLECTOR", "COMPANY"],
+          "example": "SELLER"
+        }
+      }
+    },
+    "UserLoginRequest": {
+      "type": "object",
+      "required": ["email", "password"],
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "john@example.com"
+        },
+        "password": {
+          "type": "string",
+          "example": "password123"
+        }
+      }
+    },
+    "UserUpdateRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "johndoe_updated"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "john.updated@example.com"
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "user_type": {
+          "type": "string",
+          "enum": ["SELLER", "COLLECTOR", "COMPANY"]
+        },
+        "address": {
+          "$ref": "#/definitions/UserAddress"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "access_token": {
+          "type": "string",
+          "description": "JWT access token (only returned on login)"
+        }
+      }
+    },
+    "UserAddress": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "street_address": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "regency": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "TransactionDto": {
+      "type": "object",
+      "required": ["email", "oil_volume", "price", "transaction_type"],
+      "properties": {
+        "email": {
+          "type": "string",
+          "example": "user@example.com"
+        },
+        "oil_volume": {
+          "type": "number",
+          "format": "float",
+          "example": 100.5
+        },
+        "price": {
+          "type": "integer",
+          "example": 50000
+        },
+        "transaction_type": {
+          "type": "string",
+          "enum": ["SELL", "BUY"],
+          "example": "SELL"
+        }
+      }
+    },
+    "TransactionResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "seller_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Present for SELL transactions"
+        },
+        "collector_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Present for BUY transactions"
+        },
+        "volume": {
+          "type": "number",
+          "format": "float"
+        },
+        "price": {
+          "type": "number",
+          "format": "double"
+        },
+        "transaction_type": {
+          "type": "string",
+          "enum": ["SELL", "BUY"]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ReportByDate": {
+      "type": "object",
+      "required": ["start_date", "end_date", "report_type"],
+      "properties": {
+        "start_date": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2024-01-01T00:00:00Z"
+        },
+        "end_date": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2024-12-31T23:59:59Z"
+        },
+        "report_type": {
+          "type": "string",
+          "enum": ["SALES", "PURCHASE"],
+          "example": "SALES"
+        }
+      }
+    },
+    "ReportAll": {
+      "type": "object",
+      "required": ["report_type"],
+      "properties": {
+        "report_type": {
+          "type": "string",
+          "enum": ["SALES", "PURCHASE"],
+          "example": "SALES"
+        }
+      }
+    },
+    "ReportTransaction": {
+      "type": "object",
+      "properties": {
+        "transaction_date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "collector_name": {
+          "type": "string"
+        },
+        "seller_name": {
+          "type": "string"
+        },
+        "company_name": {
+          "type": "string"
+        },
+        "oil_volume": {
+          "type": "number",
+          "format": "float"
+        },
+        "price": {
+          "type": "integer"
+        }
+      }
+    },
+    "HTTPResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "object"
+        },
+        "error": {
+          "type": "object"
+        }
+      }
+    },
+    "HTTPErrorResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "object",
+          "nullable": true
+        },
+        "error": {
+          "$ref": "#/definitions/HTTPError"
+        }
+      }
+    },
+    "HTTPError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "example": 404
+        },
+        "message": {
+          "type": "string",
+          "example": "User not found"
+        },
+        "known_error": {
+          "type": "boolean",
+          "example": true
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,79 @@
+erDiagram
+	direction RL
+	Address {
+		BIGSERIAL id PK ""  
+		TEXT street_address  ""  
+		TEXT city  ""  
+		TEXT regency  ""  
+		TEXT province  ""  
+		TIMESTAMPTZ created_at  ""  
+		TIMESTAMPTZ updated_at  ""  
+	}
+
+	User {
+		BIGSERIAL id PK ""  
+		BIGINT address_id FK "UNIQUE"  
+		VARCHAR username  ""  
+		VARCHAR email  "UNIQUE"  
+		VARCHAR password_hash  ""  
+		user_type_t user_type  "ENUM"  
+		TIMESTAMPTZ created_at  ""  
+		TIMESTAMPTZ updated_at  ""  
+	}
+
+	Seller {
+		BIGSERIAL id PK ""  
+		BIGINT user_id FK "UNIQUE"  
+		TEXT seller_name  ""  
+	}
+
+	Collector {
+		BIGSERIAL id PK ""  
+		BIGINT user_id FK "UNIQUE"  
+		TEXT collector_name  ""  
+		TIMESTAMPTZ created_at  ""  
+		TIMESTAMPTZ updated_at  ""  
+	}
+
+	Company {
+		BIGSERIAL id PK ""  
+		BIGINT user_id FK "UNIQUE"  
+		TEXT company_name  ""  
+	}
+
+	Oil {
+		BIGSERIAL id PK ""  
+		BIGINT collector_id FK "UNIQUE"  
+		DECIMAL total_volume  ""  
+		TIMESTAMPTZ created_at  ""  
+		TIMESTAMPTZ updated_at  ""  
+	}
+
+	SellTransaction {
+		BIGSERIAL id PK ""  
+		BIGINT seller_id FK ""  
+		BIGINT collector_id FK ""  
+		DECIMAL volume  ""  
+		DECIMAL price  ""  
+		TIMESTAMPTZ created_at  ""  
+	}
+
+	DistributeTransaction {
+		BIGSERIAL id PK ""  
+		BIGINT collector_id FK ""  
+		BIGINT company_id FK ""  
+		DECIMAL volume  ""  
+		DECIMAL price  ""  
+		TIMESTAMPTZ created_at  ""  
+	}
+  
+Address ||--o| User : "one-to-one (optional)"
+    User ||--|| Seller : "one-to-one"
+    User ||--|| Collector : "one-to-one"
+    User ||--|| Company : "one-to-one"
+    Collector ||--|| Oil : "one-to-one"
+    Seller ||--o{ SellTransaction : "one-to-many"
+    Collector ||--o{ SellTransaction : "one-to-many"
+    Collector ||--o{ DistributeTransaction : "one-to-many"
+    Company ||--o{ DistributeTransaction : "one-to-many"
+
